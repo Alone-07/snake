@@ -1,132 +1,119 @@
 const canvas = document.querySelector('#canvas')
 const ctx = canvas.getContext('2d')
-const body = document.body
-let snakeSize = 50
-let column = 15
-let row = 10
-let canvasWidth = snakeSize * column
-let canvasHeight = snakeSize * row
 
+const columns = 20
+const rows = 15
+const blockSize = 25
+
+canvas.width = columns * 25
+canvas.height = rows * 25
 canvas.style.backgroundColor = '#323437'
-canvas.width = canvasWidth
-canvas.height = canvasHeight
 
-class Snake {
-    constructor(x,y,width, height, ctx){
+let appleX = Math.floor(Math.random() * columns) * blockSize
+let appleY = Math.floor(Math.random() * rows) * blockSize
+let appleColor = 'orangered'
+
+
+class Snake{
+    constructor(x, y) {
         this.x = x
         this.y = y
-        this.width = width
-        this.height = height
-        this.tail =  {
-            width: this.width,
-            height: this.height
+        this.tail = {
+            x: this.x,
+            y: this.y
         }
-        this.interval = 'nothing'
-        this.speed = 5
-        this.ctx = ctx
+        this.rotateX = 0;
+        this.rotateY = 0;
         this.snakeColor = 'white'
         this.appleColor = 'orangered'
-        this.score = 0
-        this.rotateX = 1
-        this.rotateY = 1
-        this.moved  = {
-            x_axis : this.x,
-            y_axis : this.y
+    }
+    move() {
+        if(this.rotateX == 1) {
+                this.tail.x = this.tail.x + blockSize
+                this.tail.y = this.tail.y
+        } else if(this.rotateX == -1) {
+                this.tail.x = this.tail.x - blockSize
+                this.tail.y = this.tail.y
+        } else if(this.rotateY == 1) {
+                this.tail.x = this.tail.x 
+                this.tail.y = this.tail.y + blockSize
+        } else if(this.rotateY == -1) {
+                this.tail.x = this.tail.x
+                this.tail.y = this.tail.y - blockSize
         }
-    }
-    //to creat rectangle
-    rect = (x, y, color, width, height) => {
-        this.ctx.fillStyle = color
-        this.ctx.fillRect(x,y,width,height)
-    }
-    cRect = (preX, preY, preWidth,preHeight) => {
-        this.ctx.clearRect(preX,preY,preWidth,preHeight)
-    }
-    // initial function 
-    draw = _ => {
-        this.rect(this.x, this.y, this.snakeColor,this.width, this.height)
-    }
-   move = e => {
-        //here width and height are from snakeSize, Hence both are equal
-
-        if(e.key == 'ArrowUp') {
-            clearInterval(this.interval) // to clear previous interval
-
-            this.interval = setInterval( _ => {
-                this.cRect(this.moved.x_axis, this.moved.y_axis,this.tail.width, this.tail.height)
-                this.moved.y_axis -= this.width;
-                if(this.moved.x_axis == this.appleX && this.moved.y_axis ==this.appleY) {
-
-                    this.apple()
-                }
-                this.rect(this.moved.x_axis, this.moved.y_axis, this.snakeColor, this.tail.width, this.tail.height)
-                // for apple
-                this.rect(this.appleX, this.appleY, this.appleColor, this.width, this.height)
-            }, 1000/this.speed )
-        }   
-        else if(e.key == 'ArrowDown') {
-            clearInterval(this.interval) // to clear previous interval
-
-            this.interval = setInterval( _ => {
-                this.cRect(this.moved.x_axis, this.moved.y_axis,this.tail.width, this.tail.height)
-                this.moved.y_axis += this.width;
-                if(this.moved.x_axis == this.appleX && this.moved.y_axis ==this.appleY) {
-
-                    this.apple()
-                }
-                this.rect(this.moved.x_axis, this.moved.y_axis, this.snakeColor, this.tail.width, this.tail.height)
-                    // for apple
-                this.rect(this.appleX, this.appleY, this.appleColor, this.width, this.height)
-            }, 1000/this.speed )
-        }  
-        else if(e.key == 'ArrowLeft') {
-            clearInterval(this.interval)
-
-            this.interval = setInterval( _ => {
-                this.cRect(this.moved.x_axis, this.moved.y_axis,this.tail.width, this.tail.height)
-                this.moved.x_axis -= this.width;
-                 if(this.moved.x_axis == this.appleX && this.moved.y_axis ==this.appleY) {
-
-                    this.apple()
-                }
-                this.rect(this.moved.x_axis, this.moved.y_axis, this.snakeColor, this.tail.width, this.tail.height)
-                // for apple
-                this.rect(this.appleX, this.appleY, this.appleColor, this.width, this.height)
-            }, 1000/this.speed )
-        }   
-        else if(e.key == 'ArrowRight') {
-            clearInterval(this.interval)
-
-            this.interval = setInterval( _ => {
-                this.cRect(this.moved.x_axis, this.moved.y_axis,this.tail.width, this.tail.height)
-                this.moved.x_axis += this.width;
-                  if(this.moved.x_axis == this.appleX && this.moved.y_axis ==this.appleY) {
-                    this.apple()
-                }
-               this.rect(this.moved.x_axis, this.moved.y_axis, this.snakeColor, this.tail.width, this.tail.height)
-                // for apple
-                this.rect(this.appleX, this.appleY, this.appleColor, this.width, this.height)
-            }, 1000/this.speed )
-        }
-
-    }
-
-    apple = _ => {
-        this.appleX = Math.floor(Math.random() * column) * this.width;
-        this.appleY = Math.floor(Math.random() * row) * this.height;
-
-        console.log('apple x', this.appleX, 'apple y', this.appleY)
-        this.rect(this.appleX, this.appleY, this.appleColor, this.width, this.height)
     }
 }
-let x= 5 * snakeSize;
-let y= 5 * snakeSize;
-const snake = new Snake(x, y, snakeSize / 2, snakeSize / 2, ctx)
-const scoreBoard = document.querySelector('.scoreBoard')
+
+function createRect(x, y, color) {
+        ctx.fillStyle = color
+        ctx.fillRect(x, y, blockSize, blockSize)
+}
+function deleteRect(x, y, width, height) {
+        ctx.clearRect(x, y, width, height)
+}
+
+function changeApple() {
+  if(snake.tail.x  == appleX && snake.tail.y == appleY) {
+    appleX = Math.floor(Math.random() * columns) * blockSize
+    appleY = Math.floor(Math.random() * rows) * blockSize
+  }
+}
+
+function checkHitWall() {
+  if(snake.tail.x > canvas.width || snake.tail.y > canvas.height || snake.tail.x < 0 || snake.tail.y < 0){
+
+  //to reset the game
+    snake.tail.x = blockSize
+    snake.tail.y = blockSize
+    snake.rotateX = 0
+    snake.rotateY = 0
+    appleX = Math.floor(Math.random() * columns) * blockSize
+    appleY = Math.floor(Math.random() * rows) * blockSize
+
+  }
+}
+
+const snake = new Snake(blockSize, blockSize)
+const fps = 10
+
+function draw() {
+  //to clear the canvas 
+    deleteRect(0, 0, canvas.width, canvas.height)
+  //to create apple
+    createRect(appleX,appleY, appleColor)
+  //to create snake 
+    createRect(snake.tail.x, snake.tail.y, snake.snakeColor)
+
+    show()
+}
+
+function show() {
+  snake.move()
+  changeApple()
+  checkHitWall()
+}
 
 window.onload = _ => {
-    snake.draw()
-    snake.apple()
+    setInterval(draw, 1000 / fps)
 }
-body.addEventListener('keydown', snake.move)
+window.addEventListener('keydown', e => {
+  let key = e.key
 
+  if(key === "ArrowUp" && snake.rotateY != 1){
+    snake.rotateY = -1
+    snake.rotateX = 0
+    console.log(key)
+  }else if(key === "ArrowDown" && snake.rotateY != -1){
+    snake.rotateY = 1
+    snake.rotateX = 0
+    console.log(key)
+  }else if( key === "ArrowLeft" && snake.rotateX != 1) {
+    snake.rotateX = -1
+    snake.rotateY = 0 
+    console.log(key)
+  }else if(key === "ArrowRight" && snake.rotateX != -1) {
+    snake.rotateX = 1
+    snake.rotateY = 0
+    console.log(key)
+  }
+})
