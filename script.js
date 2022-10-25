@@ -1,9 +1,9 @@
 const canvas = document.querySelector('#canvas')
 const ctx = canvas.getContext('2d')
-
 const columns = 20
 const rows = 15
 const blockSize = 25
+let count = 0
 
 canvas.width = columns * 25
 canvas.height = rows * 25
@@ -56,6 +56,7 @@ function changeApple() {
   if(snake.tail.x  == appleX && snake.tail.y == appleY) {
     appleX = Math.floor(Math.random() * columns) * blockSize
     appleY = Math.floor(Math.random() * rows) * blockSize
+    count++
   }
 }
 
@@ -69,7 +70,7 @@ function checkHitWall() {
     snake.rotateY = 0
     appleX = Math.floor(Math.random() * columns) * blockSize
     appleY = Math.floor(Math.random() * rows) * blockSize
-
+    count = 0
   }
 }
 
@@ -80,6 +81,8 @@ function draw() {
   //to clear the canvas 
     deleteRect(0, 0, canvas.width, canvas.height)
   //to create apple
+  ctx.font = '20px Arial'
+  ctx.fillText(`Score: ${count}`,  16.5 * blockSize, 20)
     createRect(appleX,appleY, appleColor)
   //to create snake 
     createRect(snake.tail.x, snake.tail.y, snake.snakeColor)
@@ -102,18 +105,14 @@ window.addEventListener('keydown', e => {
   if(key === "ArrowUp" && snake.rotateY != 1){
     snake.rotateY = -1
     snake.rotateX = 0
-    console.log(key)
   }else if(key === "ArrowDown" && snake.rotateY != -1){
     snake.rotateY = 1
     snake.rotateX = 0
-    console.log(key)
   }else if( key === "ArrowLeft" && snake.rotateX != 1) {
     snake.rotateX = -1
     snake.rotateY = 0 
-    console.log(key)
   }else if(key === "ArrowRight" && snake.rotateX != -1) {
     snake.rotateX = 1
     snake.rotateY = 0
-    console.log(key)
   }
 })
